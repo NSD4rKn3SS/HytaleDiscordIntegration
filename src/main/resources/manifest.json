@@ -1,0 +1,18 @@
+{
+  "Group": "com.kozejin",
+  "Name": "DiscordIntegration",
+  "Version": "1.0.5",
+  "Description": "Two way chat bridge between Hytale server and Discord with player data tracking",
+  "Authors": [
+    {
+      "Name": "Kozejin"
+    }
+  ],
+  "Website": "https://github.com/dkoz/HytaleDiscordIntegration",
+  "ServerVersion": "*",
+  "Dependencies": {},
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "IncludesAssetPack": false,
+  "Main": "com.kozejin.DiscordIntegration"
+}
