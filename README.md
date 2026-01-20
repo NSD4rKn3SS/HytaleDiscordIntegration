@@ -6,3 +6,15 @@ Discord Integration offers a two way chat bridge between your Hytale server and 
 
 - Java 25+
 - Hytale Server API (`HytaleServer.jar`)
+
+## Extensions by @NSD4rKn3SS
+
+Using this API list: https://rentry.co/gykiza2m
+
+and this guide: https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env
+
+PS.: I did have to use AI help, because I'm merely a webdev and have only very basic Java experience.
+
+### Additions:
+ - Player death relay,
+ - Server online and shutdown relay.

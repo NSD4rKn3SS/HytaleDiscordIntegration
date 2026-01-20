@@ -42,4 +42,29 @@ public class MessageRelay {
             bot.sendMessage(formatted);
         }
     }
+
+    public void sendDeathMessage(String playerName) {
+        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        if (bot != null && bot.isConnected()) {
+            String formatted = config.getMessageFormat().getDeathMessage()
+                .replace("{player}", playerName);
+            bot.sendMessage(formatted);
+        }
+    }
+
+    public void sendServerStartMessage() {
+        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        if (bot != null && bot.isConnected()) {
+            String formatted = config.getMessageFormat().getServerStartMessage();
+            bot.sendMessage(formatted);
+        }
+    }
+
+    public void sendServerStopMessage() {
+        DiscordBot bot = DiscordIntegration.getInstance().discordBot;
+        if (bot != null && bot.isConnected()) {
+            String formatted = config.getMessageFormat().getServerStopMessage();
+            bot.sendMessage(formatted);
+        }
+    }
 }

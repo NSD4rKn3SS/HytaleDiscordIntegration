@@ -4,6 +4,8 @@ import java.awt.Color;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.event.EventPriority;
 import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
+import com.hypixel.hytale.server.core.event.events.BootEvent;
+import com.hypixel.hytale.server.core.event.events.ShutdownEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -71,10 +73,15 @@ public class DiscordIntegration extends JavaPlugin {
         
         getEventRegistry().register(com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent.class, this::onPlayerJoin);
         getEventRegistry().register(com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent.class, this::onPlayerLeave);
+        getEventRegistry().register(BootEvent.class, this::onServerBoot);
+        getEventRegistry().register(ShutdownEvent.class, this::onServerShutdown);
         
         getCommandRegistry().registerCommand(new LinkCommand());
         getCommandRegistry().registerCommand(new ProfileCommand());
         getCommandRegistry().registerCommand(new DiscordConfigCommand());
+        
+        // Register the death system
+        getEntityStoreRegistry().registerSystem(new PlayerDeathSystem());
         
         System.out.println("[Discord Integration] Event listeners and commands registered!");
 
@@ -151,6 +158,19 @@ public class DiscordIntegration extends JavaPlugin {
         handlePlayerLeave(playerRef.getUsername());
         updatePlayerCount();
     }
+    
+    private void onServerBoot(BootEvent event) {
+        System.out.println("[Discord Integration] Server boot event received");
+        // Delay sending the message slightly to ensure Discord bot is connected
+        java.util.concurrent.Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            handleServerStart();
+        }, 2, java.util.concurrent.TimeUnit.SECONDS);
+    }
+    
+    private void onServerShutdown(ShutdownEvent event) {
+        System.out.println("[Discord Integration] Server shutdown event received");
+        handleServerStop();
+    }
 
     public void loadConfig() {
         File configFile = new File("mods/DiscordIntegration/config.json");
@@ -196,6 +216,28 @@ public class DiscordIntegration extends JavaPlugin {
     private void handlePlayerLeave(String username) {
         if (messageRelay != null) {
             messageRelay.sendLeaveMessage(username);
+        }
+    }
+    
+    private void handlePlayerDeath(String username) {
+        if (messageRelay != null) {
+            messageRelay.sendDeathMessage(username);
+        }
+    }
+
+    public void notifyPlayerDeath(String username) {
+        handlePlayerDeath(username);
+    }
+    
+    private void handleServerStart() {
+        if (messageRelay != null) {
+            messageRelay.sendServerStartMessage();
+        }
+    }
+    
+    private void handleServerStop() {
+        if (messageRelay != null) {
+            messageRelay.sendServerStopMessage();
         }
     }
 
