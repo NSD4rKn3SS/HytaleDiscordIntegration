@@ -12,12 +12,16 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class DiscordIntegration extends JavaPlugin {
@@ -183,7 +187,24 @@ public class DiscordIntegration extends JavaPlugin {
             System.out.println("[Discord Integration] Please configure your bot token and channel IDs!");
         } else {
             try (FileReader reader = new FileReader(configFile)) {
-                config = gson.fromJson(reader, DiscordConfig.class);
+                JsonElement parsed = JsonParser.parseReader(reader);
+                if (!parsed.isJsonObject()) {
+                    throw new IllegalStateException("Config root must be a JSON object");
+                }
+
+                JsonObject existingJson = parsed.getAsJsonObject();
+
+                JsonObject defaultsJson = gson.toJsonTree(new DiscordConfig()).getAsJsonObject();
+                boolean updated = mergeMissingJson(existingJson, defaultsJson);
+
+                if (updated) {
+                    try (FileWriter writer = new FileWriter(configFile)) {
+                        gson.toJson(existingJson, writer);
+                    }
+                    System.out.println("[Discord Integration] Updated config with missing default settings");
+                }
+
+                config = gson.fromJson(existingJson, DiscordConfig.class);
                 System.out.println("[Discord Integration] Config loaded successfully");
             } catch (Exception e) {
                 System.out.println("[Discord Integration] Error loading config: " + e.getMessage());
@@ -191,6 +212,28 @@ public class DiscordIntegration extends JavaPlugin {
                 saveConfig(configFile);
             }
         }
+    }
+
+    private boolean mergeMissingJson(JsonObject target, JsonObject defaults) {
+        boolean changed = false;
+
+        for (Map.Entry<String, JsonElement> entry : defaults.entrySet()) {
+            String key = entry.getKey();
+            JsonElement defaultValue = entry.getValue();
+
+            if (!target.has(key) || target.get(key).isJsonNull()) {
+                target.add(key, defaultValue);
+                changed = true;
+                continue;
+            }
+
+            JsonElement currentValue = target.get(key);
+            if (currentValue.isJsonObject() && defaultValue.isJsonObject()) {
+                changed |= mergeMissingJson(currentValue.getAsJsonObject(), defaultValue.getAsJsonObject());
+            }
+        }
+
+        return changed;
     }
 
     public void saveConfig(File configFile) {

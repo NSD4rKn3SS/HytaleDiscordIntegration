@@ -19,6 +19,10 @@ public class DiscordBot extends ListenerAdapter {
     private JDA jda;
     private TextChannel textChannel;
 
+    private String lastChannelTopic;
+    private long lastChannelTopicUpdateMillis;
+    private static final long CHANNEL_TOPIC_MIN_UPDATE_INTERVAL_MILLIS = 30_000;
+
     public DiscordBot(DiscordConfig config, BiConsumer<String, String> onDiscordMessage) {
         this.config = config;
         this.onDiscordMessage = onDiscordMessage;
@@ -318,5 +322,29 @@ public class DiscordBot extends ListenerAdapter {
             String status = max > 0 ? online + "/" + max + " players online" : online + " players online";
             jda.getPresence().setActivity(Activity.playing(status));
         }
+
+        if (textChannel == null) return;
+        if (!config.isShowPlayerCountInChannelDescription()) return;
+
+        String format = config.getChannelDescriptionPlayerCountFormat();
+        if (format == null || format.isBlank()) {
+            format = "Players online: {online}";
+        }
+
+        String topic = format
+            .replace("{online}", String.valueOf(online))
+            .replace("{max}", String.valueOf(max));
+
+        long now = System.currentTimeMillis();
+        if (lastChannelTopic != null && lastChannelTopic.equals(topic)) return;
+        if (now - lastChannelTopicUpdateMillis < CHANNEL_TOPIC_MIN_UPDATE_INTERVAL_MILLIS) return;
+
+        lastChannelTopic = topic;
+        lastChannelTopicUpdateMillis = now;
+
+        textChannel.getManager().setTopic(topic).queue(
+            success -> System.out.println("[Discord] Updated channel description (topic) to: " + topic),
+            error -> System.out.println("[Discord] Failed to update channel topic: " + error.getMessage())
+        );
     }
 }

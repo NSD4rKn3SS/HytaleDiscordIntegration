@@ -66,7 +66,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("/discord set <field> <value> - Set config value"));
         player.sendMessage(Message.raw("/discord list - Show all config values"));
         player.sendMessage(Message.raw("/discord reload - Reload config from file"));
-        player.sendMessage(Message.raw("Fields: enabled, showChatTag, enableInGameChat, chatTagText, channelId, commandChannelId, adminRoleId"));
+        player.sendMessage(Message.raw("Fields: enabled, showChatTag, enableInGameChat, chatTagText, channelId, commandChannelId, adminRoleId, showPlayerCountInChannelDescription, channelDescriptionPlayerCountFormat"));
     }
 
     private void getConfigValue(PlayerRef player, String fieldName) {
@@ -104,6 +104,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("channelId: " + config.getChannelId()));
         player.sendMessage(Message.raw("commandChannelId: " + config.getCommandChannelId()));
         player.sendMessage(Message.raw("adminRoleId: " + config.getAdminRoleId()));
+        player.sendMessage(Message.raw("showPlayerCountInChannelDescription: " + config.isShowPlayerCountInChannelDescription()));
+        player.sendMessage(Message.raw("channelDescriptionPlayerCountFormat: " + config.getChannelDescriptionPlayerCountFormat()));
     }
 
     private void reloadConfig(PlayerRef player) {
@@ -131,6 +133,10 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 return config.getCommandChannelId();
             case "adminroleid":
                 return config.getAdminRoleId();
+            case "showplayercountinchanneldescription":
+                return config.isShowPlayerCountInChannelDescription();
+            case "channeldescriptionplayercountformat":
+                return config.getChannelDescriptionPlayerCountFormat();
             default:
                 throw new Exception("Unknown field: " + fieldName);
         }
@@ -158,6 +164,12 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 break;
             case "adminroleid":
                 config.setAdminRoleId(value.replace("\"", ""));
+                break;
+            case "showplayercountinchanneldescription":
+                config.setShowPlayerCountInChannelDescription(Boolean.parseBoolean(value));
+                break;
+            case "channeldescriptionplayercountformat":
+                config.setChannelDescriptionPlayerCountFormat(value.replace("\"", ""));
                 break;
             default:
                 throw new Exception("Unknown field: " + fieldName);
