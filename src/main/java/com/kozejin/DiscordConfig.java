@@ -5,6 +5,7 @@ public class DiscordConfig {
     private String channelId = "111111111111111";
     private String commandChannelId = "222222222222222";
     private String adminRoleId = "333333333333333";
+    private boolean allowOtherBotMessages = false;
     private boolean enabled = false;
     private String chatTagText = "Linked";
     private boolean showChatTag = true;
@@ -55,6 +56,9 @@ public class DiscordConfig {
     
     public String getAdminRoleId() { return adminRoleId; }
     public void setAdminRoleId(String adminRoleId) { this.adminRoleId = adminRoleId; }
+
+    public boolean isAllowOtherBotMessages() { return allowOtherBotMessages; }
+    public void setAllowOtherBotMessages(boolean allowOtherBotMessages) { this.allowOtherBotMessages = allowOtherBotMessages; }
     
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

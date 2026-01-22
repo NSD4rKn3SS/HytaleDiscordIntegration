@@ -96,9 +96,23 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) return;
-        
         String channelId = event.getChannel().getId();
+
+        // Always ignore webhook messages to avoid loops/impersonation.
+        if (event.isWebhookMessage()) return;
+
+        if (event.getAuthor().isBot()) {
+            // Always ignore messages sent by THIS integration's bot account.
+            try {
+                if (event.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) return;
+            } catch (Exception ignored) {
+                // If self user isn't available for some reason, fall back to config gate below.
+            }
+
+            // Only allow other bot messages when explicitly enabled, and only in the relay channel.
+            if (!config.isAllowOtherBotMessages() || !channelId.equals(config.getChannelId())) return;
+        }
+
         String username = event.getAuthor().getName();
         String message = event.getMessage().getContentDisplay();
 

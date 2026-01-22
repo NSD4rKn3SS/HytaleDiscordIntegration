@@ -66,7 +66,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("/discord set <field> <value> - Set config value"));
         player.sendMessage(Message.raw("/discord list - Show all config values"));
         player.sendMessage(Message.raw("/discord reload - Reload config from file"));
-        player.sendMessage(Message.raw("Fields: enabled, showChatTag, enableInGameChat, chatTagText, channelId, commandChannelId, adminRoleId, showPlayerCountInChannelDescription, channelDescriptionPlayerCountFormat"));
+        player.sendMessage(Message.raw("Fields: enabled, allowOtherBotMessages, showChatTag, enableInGameChat, chatTagText, channelId, commandChannelId, adminRoleId, showPlayerCountInChannelDescription, channelDescriptionPlayerCountFormat"));
     }
 
     private void getConfigValue(PlayerRef player, String fieldName) {
@@ -98,6 +98,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         
         player.sendMessage(Message.raw("=== Discord Config Values ==="));
         player.sendMessage(Message.raw("enabled: " + config.isEnabled()));
+        player.sendMessage(Message.raw("allowOtherBotMessages: " + config.isAllowOtherBotMessages()));
         player.sendMessage(Message.raw("showChatTag: " + config.isShowChatTag()));
         player.sendMessage(Message.raw("enableInGameChat: " + config.isEnableInGameChat()));
         player.sendMessage(Message.raw("chatTagText: " + config.getChatTagText()));
@@ -121,6 +122,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         switch (fieldName.toLowerCase()) {
             case "enabled":
                 return config.isEnabled();
+            case "allowotherbotmessages":
+                return config.isAllowOtherBotMessages();
             case "showchattag":
                 return config.isShowChatTag();
             case "enableingamechat":
@@ -146,6 +149,9 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         switch (fieldName.toLowerCase()) {
             case "enabled":
                 config.setEnabled(Boolean.parseBoolean(value));
+                break;
+            case "allowotherbotmessages":
+                config.setAllowOtherBotMessages(Boolean.parseBoolean(value));
                 break;
             case "showchattag":
                 config.setShowChatTag(Boolean.parseBoolean(value));
