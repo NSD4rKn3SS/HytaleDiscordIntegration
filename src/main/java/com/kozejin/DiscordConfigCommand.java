@@ -172,10 +172,10 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 config.setAdminRoleId(value.replace("\"", ""));
                 break;
             case "showPlayerCountInTopic":
-                config.setshowPlayerCountInTopic(Boolean.parseBoolean(value));
+                config.setShowPlayerCountInTopic(Boolean.parseBoolean(value));
                 break;
             case "topicPlayerCountFormat":
-                config.settopicPlayerCountFormat(value.replace("\"", ""));
+                config.setTopicPlayerCountFormat(value.replace("\"", ""));
                 break;
             default:
                 throw new Exception("Unknown field: " + fieldName);

@@ -73,12 +73,12 @@ public class DiscordConfig {
     public void setEnableInGameChat(boolean enableInGameChat) { this.enableInGameChat = enableInGameChat; }
 
     public boolean isShowPlayerCountInTopic() { return showPlayerCountInTopic; }
-    public void setshowPlayerCountInTopic(boolean showPlayerCountInTopic) {
+    public void setShowPlayerCountInTopic(boolean showPlayerCountInTopic) {
         this.showPlayerCountInTopic = showPlayerCountInTopic;
     }
 
     public String getTopicPlayerCountFormat() { return topicPlayerCountFormat; }
-    public void settopicPlayerCountFormat(String topicPlayerCountFormat) {
+    public void setTopicPlayerCountFormat(String topicPlayerCountFormat) {
         this.topicPlayerCountFormat = topicPlayerCountFormat;
     }
 
