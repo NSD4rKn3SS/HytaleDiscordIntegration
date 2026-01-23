@@ -10,8 +10,8 @@ public class DiscordConfig {
     private String chatTagText = "Linked";
     private boolean showChatTag = true;
     private boolean enableInGameChat = true;
-    private boolean showPlayerCountInChannelDescription = false;
-    private String channelDescriptionPlayerCountFormat = "Players online: {online}";
+    private boolean showPlayerCountInTopic = false;
+    private String topicPlayerCountFormat = "Players online: {online}";
     private ChatTagColors chatTagColors = new ChatTagColors();
     private MessageFormat messageFormat = new MessageFormat();
 
@@ -72,14 +72,14 @@ public class DiscordConfig {
     public boolean isEnableInGameChat() { return enableInGameChat; }
     public void setEnableInGameChat(boolean enableInGameChat) { this.enableInGameChat = enableInGameChat; }
 
-    public boolean isShowPlayerCountInChannelDescription() { return showPlayerCountInChannelDescription; }
-    public void setShowPlayerCountInChannelDescription(boolean showPlayerCountInChannelDescription) {
-        this.showPlayerCountInChannelDescription = showPlayerCountInChannelDescription;
+    public boolean isShowPlayerCountInTopic() { return showPlayerCountInTopic; }
+    public void setshowPlayerCountInTopic(boolean showPlayerCountInTopic) {
+        this.showPlayerCountInTopic = showPlayerCountInTopic;
     }
 
-    public String getChannelDescriptionPlayerCountFormat() { return channelDescriptionPlayerCountFormat; }
-    public void setChannelDescriptionPlayerCountFormat(String channelDescriptionPlayerCountFormat) {
-        this.channelDescriptionPlayerCountFormat = channelDescriptionPlayerCountFormat;
+    public String getTopicPlayerCountFormat() { return topicPlayerCountFormat; }
+    public void settopicPlayerCountFormat(String topicPlayerCountFormat) {
+        this.topicPlayerCountFormat = topicPlayerCountFormat;
     }
 
     public ChatTagColors getChatTagColors() { return chatTagColors; }

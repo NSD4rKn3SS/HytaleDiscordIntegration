@@ -338,9 +338,9 @@ public class DiscordBot extends ListenerAdapter {
         }
 
         if (textChannel == null) return;
-        if (!config.isShowPlayerCountInChannelDescription()) return;
+        if (!config.isShowPlayerCountInTopic()) return;
 
-        String format = config.getChannelDescriptionPlayerCountFormat();
+        String format = config.getTopicPlayerCountFormat();
         if (format == null || format.isBlank()) {
             format = "Players online: {online}";
         }
