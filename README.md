@@ -20,3 +20,5 @@ PS.: I did have to use AI help, because I'm merely a webdev and have only very b
  - Server online and shutdown relay
  - Update the config file with newly added or missing parameter options while keeping already set variables
  - Updating the Discord Channel topic automatically with current player count, it can also be disabled
+ - Death messages can now be turned off via config, (requested by: https://github.com/mauzao9)
+ - Death messages also contain cause of death
