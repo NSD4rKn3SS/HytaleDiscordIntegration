@@ -262,14 +262,14 @@ public class DiscordIntegration extends JavaPlugin {
         }
     }
     
-    private void handlePlayerDeath(String username) {
+    private void handlePlayerDeath(String username, String cause) {
         if (messageRelay != null) {
-            messageRelay.sendDeathMessage(username);
+            messageRelay.sendDeathMessage(username, cause);
         }
     }
 
-    public void notifyPlayerDeath(String username) {
-        handlePlayerDeath(username);
+    public void notifyPlayerDeath(String username, String cause) {
+        handlePlayerDeath(username, cause);
     }
     
     private void handleServerStart() {

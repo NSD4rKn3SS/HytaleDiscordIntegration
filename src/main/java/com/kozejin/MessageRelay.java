@@ -43,11 +43,17 @@ public class MessageRelay {
         }
     }
 
-    public void sendDeathMessage(String playerName) {
+    public void sendDeathMessage(String playerName, String cause) {
+        if (!config.isEnableDeathMessages()) {
+            return;
+        }
+
         DiscordBot bot = DiscordIntegration.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
+            String causeText = (cause == null || cause.isEmpty()) ? "unknown" : cause;
             String formatted = config.getMessageFormat().getDeathMessage()
-                .replace("{player}", playerName);
+                .replace("{player}", playerName)
+                .replace("{cause}", causeText);
             bot.sendMessage(formatted);
         }
     }

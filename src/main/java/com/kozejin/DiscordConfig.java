@@ -7,6 +7,7 @@ public class DiscordConfig {
     private String adminRoleId = "333333333333333";
     private boolean allowOtherBotMessages = false;
     private boolean enabled = false;
+    private boolean enableDeathMessages = true;
     private String chatTagText = "Linked";
     private boolean showChatTag = true;
     private boolean enableInGameChat = true;
@@ -32,7 +33,7 @@ public class DiscordConfig {
         private String discordToServer = "[Discord] <{user}> {message}";
         private String joinMessage = "**{player}** joined the server";
         private String leaveMessage = "**{player}** left the server";
-        private String deathMessage = "☠️ **{player}** died";
+        private String deathMessage = "☠️ **{player}** was killed by {cause}";
         private String serverStartMessage = "🟢 **Server is now online!**";
         private String serverStopMessage = "🔴 **Server is shutting down...**";
 
@@ -62,6 +63,9 @@ public class DiscordConfig {
     
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public boolean isEnableDeathMessages() { return enableDeathMessages; }
+    public void setEnableDeathMessages(boolean enableDeathMessages) { this.enableDeathMessages = enableDeathMessages; }
     
     public String getChatTagText() { return chatTagText; }
     public void setChatTagText(String chatTagText) { this.chatTagText = chatTagText; }

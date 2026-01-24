@@ -66,7 +66,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("/discord set <field> <value> - Set config value"));
         player.sendMessage(Message.raw("/discord list - Show all config values"));
         player.sendMessage(Message.raw("/discord reload - Reload config from file"));
-        player.sendMessage(Message.raw("Fields: enabled, allowOtherBotMessages, showChatTag, enableInGameChat, chatTagText, channelId, commandChannelId, adminRoleId, showPlayerCountInTopic, topicPlayerCountFormat"));
+        player.sendMessage(Message.raw("Fields: enabled, allowOtherBotMessages, showChatTag, enableInGameChat, enableDeathMessages, chatTagText, channelId, commandChannelId, adminRoleId, showPlayerCountInTopic, topicPlayerCountFormat"));
     }
 
     private void getConfigValue(PlayerRef player, String fieldName) {
@@ -101,6 +101,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
         player.sendMessage(Message.raw("allowOtherBotMessages: " + config.isAllowOtherBotMessages()));
         player.sendMessage(Message.raw("showChatTag: " + config.isShowChatTag()));
         player.sendMessage(Message.raw("enableInGameChat: " + config.isEnableInGameChat()));
+        player.sendMessage(Message.raw("enableDeathMessages: " + config.isEnableDeathMessages()));
         player.sendMessage(Message.raw("chatTagText: " + config.getChatTagText()));
         player.sendMessage(Message.raw("channelId: " + config.getChannelId()));
         player.sendMessage(Message.raw("commandChannelId: " + config.getCommandChannelId()));
@@ -128,6 +129,8 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 return config.isShowChatTag();
             case "enableingamechat":
                 return config.isEnableInGameChat();
+            case "enabledeathmessages":
+                return config.isEnableDeathMessages();
             case "chattagtext":
                 return config.getChatTagText();
             case "channelid":
@@ -158,6 +161,9 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
                 break;
             case "enableingamechat":
                 config.setEnableInGameChat(Boolean.parseBoolean(value));
+                break;
+            case "enabledeathmessages":
+                config.setEnableDeathMessages(Boolean.parseBoolean(value));
                 break;
             case "chattagtext":
                 config.setChatTagText(value.replace("\"", ""));
