@@ -21,7 +21,7 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
     
     @Override
     protected boolean canGeneratePermission() {
-        return false;
+        return true;
     }
 
     @Override
@@ -32,6 +32,20 @@ public class DiscordConfigCommand extends AbstractPlayerCommand {
             @Nonnull PlayerRef player,
             @Nonnull World world
     ) {
+        // Check permission using Hytale's permission system
+        // Get the player entity from the world to access hasPermission()
+        com.hypixel.hytale.server.core.entity.entities.Player playerEntity = 
+            world.getPlayers().stream()
+                .filter(p -> p.getUuid().equals(player.getUuid()))
+                .findFirst()
+                .orElse(null);
+        
+        if (playerEntity == null || !playerEntity.hasPermission("discordintegration.discord")) {
+            player.sendMessage(Message.raw("§cYou don't have permission to use this command."));
+            player.sendMessage(Message.raw("§cRequired permission: discordintegration.discord"));
+            return;
+        }
+        
         String input = context.getInputString().trim();
         String[] args = input.split("\\s+", 3);
         

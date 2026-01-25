@@ -1,20 +1,34 @@
 package com.kozejin;
 
 public class DiscordConfig {
+    // Discord integration main switch
+    private boolean enabled = false;
+
+    // General Discord Settings
     private String botToken = "Bot Token Here";
     private String channelId = "111111111111111";
     private String commandChannelId = "222222222222222";
     private String adminRoleId = "333333333333333";
+
+    // Webhook settings
+    private boolean useWebhooks = false;
+    private String webhookUrl = "";
+    private String serverName = "Server";
+    private String serverAvatarUrl = "";
+    private String defaultPlayerAvatarUrl = "";
+    private int avatarCacheMinutes = 30;
+
+    // Functionality toggles
     private boolean allowOtherBotMessages = false;
-    private boolean enabled = false;
     private boolean enableDeathMessages = true;
-    private String chatTagText = "Linked";
     private boolean showChatTag = true;
+    private String chatTagText = "Linked";
     private boolean enableInGameChat = true;
     private boolean showPlayerCountInTopic = false;
     private String topicPlayerCountFormat = "Players online: {online}";
+
     private ChatTagColors chatTagColors = new ChatTagColors();
-    private MessageFormat messageFormat = new MessageFormat();
+    private MessageFormat messageFormat = new MessageFormat();    
 
     public static class ChatTagColors {
         private String bracketColor = "#808080";
@@ -88,4 +102,23 @@ public class DiscordConfig {
 
     public ChatTagColors getChatTagColors() { return chatTagColors; }
     public MessageFormat getMessageFormat() { return messageFormat; }
+    
+    // Webhook getters and setters
+    public boolean isUseWebhooks() { return useWebhooks; }
+    public void setUseWebhooks(boolean useWebhooks) { this.useWebhooks = useWebhooks; }
+    
+    public String getWebhookUrl() { return webhookUrl; }
+    public void setWebhookUrl(String webhookUrl) { this.webhookUrl = webhookUrl; }
+    
+    public String getServerName() { return serverName; }
+    public void setServerName(String serverName) { this.serverName = serverName; }
+    
+    public String getServerAvatarUrl() { return serverAvatarUrl; }
+    public void setServerAvatarUrl(String serverAvatarUrl) { this.serverAvatarUrl = serverAvatarUrl; }
+    
+    public String getDefaultPlayerAvatarUrl() { return defaultPlayerAvatarUrl; }
+    public void setDefaultPlayerAvatarUrl(String defaultPlayerAvatarUrl) { this.defaultPlayerAvatarUrl = defaultPlayerAvatarUrl; }
+    
+    public int getAvatarCacheMinutes() { return avatarCacheMinutes; }
+    public void setAvatarCacheMinutes(int avatarCacheMinutes) { this.avatarCacheMinutes = avatarCacheMinutes; }
 }

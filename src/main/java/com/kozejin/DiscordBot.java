@@ -1,5 +1,6 @@
 package com.kozejin;
 
+import com.google.gson.JsonObject;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -10,10 +11,17 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public class DiscordBot extends ListenerAdapter {
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    
     private final DiscordConfig config;
     private final BiConsumer<String, String> onDiscordMessage;
     private JDA jda;
@@ -116,12 +124,15 @@ public class DiscordBot extends ListenerAdapter {
         String username = event.getAuthor().getName();
         String message = event.getMessage().getContentDisplay();
 
-        if (channelId.equals(config.getCommandChannelId())) {
+        // Allow !link command in both relay and command channels
+        if (channelId.equals(config.getChannelId()) || channelId.equals(config.getCommandChannelId())) {
             if (message.equalsIgnoreCase("!link")) {
                 handleLinkCommand(event);
                 return;
             }
-            
+        }
+
+        if (channelId.equals(config.getCommandChannelId())) {
             if (message.toLowerCase().startsWith("!profile")) {
                 handleProfileCommand(event, message);
                 return;
@@ -360,5 +371,115 @@ public class DiscordBot extends ListenerAdapter {
             success -> System.out.println("[Discord] Updated channel description (topic) to: " + topic),
             error -> System.out.println("[Discord] Failed to update channel topic: " + error.getMessage())
         );
+    }
+
+    /**
+     * Sends a message to Discord using a webhook with custom username and avatar.
+     * @param username The username to display in Discord
+     * @param content The message content
+     * @param avatarUrl The avatar URL (can be null)
+     */
+    public void sendWebhookMessage(String username, String content, String avatarUrl) {
+        if (!config.isUseWebhooks() || config.getWebhookUrl() == null || config.getWebhookUrl().isEmpty()) {
+            // Fallback to regular bot message
+            sendMessage("**" + username + "**: " + content);
+            return;
+        }
+
+        JsonObject json = new JsonObject();
+        json.addProperty("username", username);
+        json.addProperty("content", content);
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+            json.addProperty("avatar_url", avatarUrl);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(config.getWebhookUrl()))
+                .header("Content-Type", "application/json")
+                .header("User-Agent", "HytaleDiscordIntegration/1.0")
+                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                .build();
+
+        HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    if (response.statusCode() >= 400) {
+                        System.err.println("[Discord] Webhook Error: " + response.statusCode() + " - " + response.body());
+                    }
+                })
+                .exceptionally(ex -> {
+                    System.err.println("[Discord] Webhook Network Error: " + ex.getMessage());
+                    return null;
+                });
+    }
+
+    /**
+     * Dispatches a message to Discord using webhooks if enabled, with avatar support.
+     * Automatically fetches and caches Discord profile pictures for linked players.
+     * @param playerUuid The player's UUID (can be null for server messages)
+     * @param name The display name to use
+     * @param content The message content
+     * @param fallbackAvatar The avatar URL to use if player is not linked (can be null)
+     */
+    public void dispatchToDiscord(UUID playerUuid, String name, String content, String fallbackAvatar) {
+        // If webhooks are disabled, use standard bot message
+        if (!config.isUseWebhooks()) {
+            if (!name.equals(config.getServerName())) {
+                sendMessage("**" + name + "**: " + content);
+            } else {
+                sendMessage(content);
+            }
+            return;
+        }
+
+        // Initialize avatar cache with configured expiration time
+        AvatarCache.setExpireTime(config.getAvatarCacheMinutes());
+
+        try {
+            // Get Discord ID if player is linked
+            final String discordId;
+            if (playerUuid != null) {
+                PlayerDataStorage storage = DiscordIntegration.getInstance().getPlayerDataStorage();
+                PlayerData playerData = storage.getPlayerData(playerUuid);
+                if (playerData != null) {
+                    discordId = playerData.getDiscordId();
+                } else {
+                    discordId = null;
+                }
+            } else {
+                discordId = null;
+            }
+
+            // If no Discord link, send immediately with fallback avatar
+            if (discordId == null || jda == null) {
+                sendWebhookMessage(name, content, fallbackAvatar);
+                return;
+            }
+
+            // Try to get avatar from cache
+            String cachedAvatar = AvatarCache.get(discordId);
+            if (cachedAvatar != null) {
+                sendWebhookMessage(name, content, cachedAvatar);
+                return;
+            }
+
+            // Fetch avatar from Discord API asynchronously
+            jda.retrieveUserById(discordId).queue(
+                    user -> {
+                        String avatar = user.getEffectiveAvatarUrl();
+                        AvatarCache.put(discordId, avatar);
+                        sendWebhookMessage(name, content, avatar);
+                    },
+                    throwable -> {
+                        // If fetching fails, use fallback avatar
+                        System.out.println("[Discord] Failed to fetch avatar for user " + discordId + ": " + throwable.getMessage());
+                        sendWebhookMessage(name, content, fallbackAvatar);
+                    }
+            );
+        } catch (Exception e) {
+            // Emergency fallback: if anything goes wrong, send the message anyway
+            System.err.println("[Discord] Dispatch error: " + e.getMessage());
+            e.printStackTrace();
+            sendWebhookMessage(name, content, fallbackAvatar);
+        }
     }
 }

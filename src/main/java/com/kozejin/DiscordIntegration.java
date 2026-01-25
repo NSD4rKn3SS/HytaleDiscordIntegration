@@ -1,6 +1,7 @@
 package com.kozejin;
 
 import java.awt.Color;
+import java.util.UUID;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.event.EventPriority;
 import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
@@ -118,7 +119,7 @@ public class DiscordIntegration extends JavaPlugin {
             });
         }
         
-        handlePlayerChat(sender.getUsername(), message);
+        handlePlayerChat(sender.getUuid(), sender.getUsername(), message);
     }
 
     public void onDisable() {
@@ -244,9 +245,9 @@ public class DiscordIntegration extends JavaPlugin {
         }
     }
 
-    private void handlePlayerChat(String username, String message) {
+    private void handlePlayerChat(UUID playerUuid, String username, String message) {
         if (messageRelay != null && config.isEnableInGameChat()) {
-            messageRelay.sendToDiscord(username, message);
+            messageRelay.sendToDiscord(playerUuid, username, message);
         }
     }
 

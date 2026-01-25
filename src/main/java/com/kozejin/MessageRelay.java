@@ -1,5 +1,7 @@
 package com.kozejin;
 
+import java.util.UUID;
+
 public class MessageRelay {
     private final DiscordConfig config;
 
@@ -8,6 +10,10 @@ public class MessageRelay {
     }
 
     public void sendToDiscord(String playerName, String message) {
+        sendToDiscord(null, playerName, message);
+    }
+
+    public void sendToDiscord(UUID playerUuid, String playerName, String message) {
         System.out.println("[Discord Integration] MessageRelay.sendToDiscord called for: " + playerName);
         DiscordBot bot = DiscordIntegration.getInstance().discordBot;
         if (bot == null) {
@@ -18,11 +24,18 @@ public class MessageRelay {
             System.out.println("[Discord Integration] Bot is not connected!");
             return;
         }
-        String formatted = config.getMessageFormat().getServerToDiscord()
-            .replace("{player}", playerName)
-            .replace("{message}", message);
-        System.out.println("[Discord Integration] Sending to Discord: " + formatted);
-        bot.sendMessage(formatted);
+
+        // Use webhook dispatch if enabled, otherwise use regular bot message
+        if (config.isUseWebhooks()) {
+            String fallbackAvatar = config.getDefaultPlayerAvatarUrl();
+            bot.dispatchToDiscord(playerUuid, playerName, message, fallbackAvatar);
+        } else {
+            String formatted = config.getMessageFormat().getServerToDiscord()
+                .replace("{player}", playerName)
+                .replace("{message}", message);
+            System.out.println("[Discord Integration] Sending to Discord: " + formatted);
+            bot.sendMessage(formatted);
+        }
     }
 
     public void sendJoinMessage(String playerName) {
@@ -30,7 +43,13 @@ public class MessageRelay {
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getJoinMessage()
                 .replace("{player}", playerName);
-            bot.sendMessage(formatted);
+            
+            // Use webhook with server identity for join messages
+            if (config.isUseWebhooks()) {
+                bot.dispatchToDiscord(null, config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessage(formatted);
+            }
         }
     }
 
@@ -39,7 +58,13 @@ public class MessageRelay {
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getLeaveMessage()
                 .replace("{player}", playerName);
-            bot.sendMessage(formatted);
+            
+            // Use webhook with server identity for leave messages
+            if (config.isUseWebhooks()) {
+                bot.dispatchToDiscord(null, config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessage(formatted);
+            }
         }
     }
 
@@ -54,7 +79,13 @@ public class MessageRelay {
             String formatted = config.getMessageFormat().getDeathMessage()
                 .replace("{player}", playerName)
                 .replace("{cause}", causeText);
-            bot.sendMessage(formatted);
+            
+            // Use webhook with server identity for death messages
+            if (config.isUseWebhooks()) {
+                bot.dispatchToDiscord(null, config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessage(formatted);
+            }
         }
     }
 
@@ -62,7 +93,13 @@ public class MessageRelay {
         DiscordBot bot = DiscordIntegration.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getServerStartMessage();
-            bot.sendMessage(formatted);
+            
+            // Use webhook with server identity for server start messages
+            if (config.isUseWebhooks()) {
+                bot.dispatchToDiscord(null, config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessage(formatted);
+            }
         }
     }
 
@@ -70,7 +107,13 @@ public class MessageRelay {
         DiscordBot bot = DiscordIntegration.getInstance().discordBot;
         if (bot != null && bot.isConnected()) {
             String formatted = config.getMessageFormat().getServerStopMessage();
-            bot.sendMessage(formatted);
+            
+            // Use webhook with server identity for server stop messages
+            if (config.isUseWebhooks()) {
+                bot.dispatchToDiscord(null, config.getServerName(), formatted, config.getServerAvatarUrl());
+            } else {
+                bot.sendMessage(formatted);
+            }
         }
     }
 }
