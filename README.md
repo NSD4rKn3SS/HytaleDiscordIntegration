@@ -15,18 +15,38 @@ and this guide: https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env
 
 PS.: I did have to use AI help, because I'm merely a webdev and have only very basic Java experience.
 
-### Additions:
- - Player death relay
- - Server online and shutdown relay
- - Update the config file with newly added or missing parameter options while keeping already set variables
- - Updating the Discord Channel topic automatically with current player count, it can also be disabled
- - Death messages can now be turned off via config, (requested by: https://github.com/mauzao9)
- - Death messages also contain cause of death
- - Fixed permission requirement for using configuration commands
- - Account linking can now also be called from the messaging channel and not just the command channel for convenience
- - **Webhook Integration**: [optional, toggleable feature]
-   - (For transparency, I've used another great plugin as reference to implement this functionality https://github.com/Diversion98/discordbridgeHytale/)
-   - Bot can now relay messages as a player
-   - Uses Discord profile pictures for linked accounts
-   - Configurable server name and avatar for system messages
-   - Smart avatar caching to respect Discord rate limits
+## Additions by this fork, as of latest release
+
+- **Configurable death messages**
+  - Toggle death messages on/off with `enableDeathMessages`.
+  - Fully customizable format via `deathMessage`, including placeholders like `{player}` and `{cause}`.
+
+- **Discord server status notifications**
+  - Optional messages when the server starts and stops, using `serverStartMessage` and `serverStopMessage`.
+
+- **Safe config upgrades**
+  - Updating the plugin now only adds new settings; existing values are preserved and not overwritten.
+
+- **Discord quality-of-life improvements**
+  - Run account linking directly from the messaging channel (not just the command channel).
+  - Optionally display current player count in the messaging channel topic with:
+    - `showPlayerCountInTopic` (on/off)
+    - `topicPlayerCountFormat` (e.g. `"Players online: {online}"`).
+
+- **Webhook-based message relaying**
+  - Enable with `useWebhooks` to relay messages as the player, including their Discord avatar when accounts are linked.
+  - Customize server/system message identity:
+    - `serverName` for display name
+    - `serverAvatarUrl` for bot avatar.
+  - Configure a default avatar for unlinked players via `defaultPlayerAvatarUrl`.
+  - Smart avatar caching reduces requests and respects Discord rate limits (falls back to Discord’s default avatar if none is set).
+
+- **Permission-gated `/discord` command**
+  - New permission: `discordintegration.discord`.
+  - Uses Hytale’s built-in permission system (via `/perm`).
+  - Supports:
+    - `/discord get <field>`
+    - `/discord set <field> <value>`
+    - `/discord list`
+    - `/discord reload`
+  - Clear “permission denied” message when users lack the required permission.
