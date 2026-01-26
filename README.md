@@ -7,7 +7,7 @@ Discord Integration offers a two way chat bridge between your Hytale server and 
 - Java 25+
 - Hytale Server API (`HytaleServer.jar`)
 
-## Extensions in this fork
+## A word from me
 
 Using this API list: https://rentry.co/gykiza2m
 
